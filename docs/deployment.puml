@@ -1,0 +1,51 @@
+@startuml
+left to right direction
+skinparam componentStyle rectangle
+node "iPhone / ноутбук" as Client {
+  node "Safari / PWA" as Browser {
+    component "React UI\nКаталог / Подробнее / Лента\nДобавление / Вход" as UI
+    component "Redux Toolkit\nфильтр, данные, авторизация" as Store
+    component "Axios API client" as Axios
+    component "Service Worker" as SW
+    database "Cache Storage\nHTML, JS, CSS, изображения" as Cache
+    component "Mock-коллекция\nсборка Pages" as Mock
+  }
+}
+cloud "GitHub Pages\nHTTPS web-сервер статики" as Pages {
+  artifact "dist\nHTML, JS, CSS, manifest, SW, media" as Static
+}
+node "Ноутбук Windows / WSL" as Laptop {
+  node "Node.js / Vite :5173\nTLS: сертификат с IP ноутбука" as Node {
+    component "Раздача frontend" as Front
+    component "Реверс-прокси\n/api, /s3, /backend" as Proxy
+  }
+  node "Python / Uvicorn :8000" as Python {
+    component "FastAPI\nREST API /api/gases\n/api/users" as API
+  }
+  node "Docker" {
+    database "PostgreSQL :5432\nгазы, пользователи, лайки" as PG
+    database "Redis :6379\nсессии" as Redis
+    node "MinIO :9000\nS3 API /gas-media" as S3
+  }
+}
+UI --> Store : actions / selectors
+UI --> Axios : вызовы thunk и auth
+UI --> Mock : только Pages
+SW --> Cache : Cache API
+Browser --> Pages : HTTPS :443\nстатика, mock, PWA
+Browser --> Front : HTTPS :5173\nлокальная статика
+Axios --> Proxy : HTTPS :5173\nREST API /api\nмедиа /s3
+Proxy --> API : HTTP :8000\n/api/*, /static/*
+Proxy --> S3 : HTTP :9000\nS3 GET /gas-media/*
+API --> PG : PostgreSQL TCP :5432
+API --> Redis : Redis RESP/TCP :6379
+API --> S3 : HTTP / S3 API :9000\nзагрузка объектов
+note bottom of Pages
+Сборка Pages не обращается к backend.
+GitHub Actions: npm ci → build:pages → dist.
+end note
+note bottom of Node
+WSL NAT: Windows TCP portproxy :5173 → WSL :5173.
+Телефон и ноутбук находятся в одной Wi-Fi сети.
+end note
+@enduml

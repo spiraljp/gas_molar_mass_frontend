@@ -1,9 +1,9 @@
 .app-screen {
   width: 100%;
-  max-width: 390px;
+  max-width: 1200px;
   min-height: 100dvh;
   margin: 0 auto;
-  padding: 40px 20px 92px;
+  padding: 32px 16px 100px;
 }
 
 .page-title {
@@ -98,7 +98,7 @@
   bottom: 0;
   z-index: 1001;
   width: 100%;
-  max-width: 390px;
+  max-width: 1200px;
   min-height: 70px;
   padding: 0;
   transform: translateX(-50%);
@@ -252,7 +252,7 @@
 .feed-like { border: 0; background: transparent; }
 .feed-like:disabled { opacity: .7; }
 .request-overlay { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; gap: 12px; background: rgb(255 255 255 / 65%); color: #245f92; }
-.app-notice { position: relative; z-index: 11; max-width: 390px; margin: 0 auto; padding: 8px 15px; background: #fff3cd; font-size: 13px; }
+.app-notice { position: relative; z-index: 11; max-width: 1200px; margin: 0 auto; padding: 8px 15px; background: #fff3cd; font-size: 13px; }
 .app-error { background: #f8d7da; }
 .auth-form, .create-form { display: grid; gap: 16px; }
 
@@ -267,10 +267,6 @@
 }
 
 /* ЛР7: phone <600px: 2 columns; tablet >=600px: 3; desktop >=992px: 4. */
-.app-screen, .bottom-nav, .app-notice { max-width: 1200px; }
-.app-screen { padding: 32px 16px 100px; }
-.gas-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 14px; }
-.gas-card-image { aspect-ratio: 1; }
 .gas-details-link { display: inline-block; margin: 4px 0; }
 .auth-form, .create-form { width: 100%; max-width: 560px; margin-inline: auto; }
 .draft-image { max-width: 560px; margin-inline: auto; }
