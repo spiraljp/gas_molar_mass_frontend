@@ -1,17 +1,27 @@
+import { mockOnly } from './api/mode'
+import GasDetailsPage from './pages/GasDetailsPage'
 import { useEffect, useState } from 'react'
-import { Container } from 'react-bootstrap'
+import { Spinner } from 'react-bootstrap'
 import BottomNav from './components/BottomNav'
 import CatalogPage from './pages/CatalogPage'
 import FeedPage from './pages/FeedPage'
-import GasDetailsPage from './pages/GasDetailsPage'
 import './App.css'
+import LoginPage from './pages/LoginPage'
+import CreateGasPage from './pages/CreateGasPage'
+import { useAppSelector } from './store'
 
 function getPath() {
-  return window.location.hash.slice(1) || '/catalog'
+  const path = window.location.hash.slice(1)
+  if (/^\/gas\/\d+$/.test(path)) return path
+  return ['/catalog', '/feed', '/login', '/create'].includes(path) ? path : '/catalog'
 }
 
 function App() {
   const [path, setPath] = useState(getPath)
+  const { pending, error, source } = useAppSelector((state) => state.gases)
+  const { status: authStatus, error: authError } = useAppSelector((state) => state.auth)
+  const authBusy = authStatus === 'loading'
+  const busy = pending > 0 || authBusy
 
   useEffect(() => {
     function handleHashChange() {
@@ -27,27 +37,29 @@ function App() {
   }, [])
 
   const detailsMatch = path.match(/^\/gas\/(\d+)$/)
-
   let page
 
   if (path === '/catalog') {
     page = <CatalogPage />
   } else if (path === '/feed') {
     page = <FeedPage />
+  } else if (path === '/login') {
+    page = <LoginPage />
+  } else if (path === '/create') {
+    page = <CreateGasPage />
   } else if (detailsMatch) {
     page = <GasDetailsPage gasId={Number(detailsMatch[1])} />
   } else {
-    page = (
-      <Container as="main" className="app-screen">
-        <h1 className="page-title">Страница не найдена</h1>
-        <a href="#/catalog">Вернуться в каталог</a>
-      </Container>
-    )
+    page = <CatalogPage />
   }
 
   return (
     <>
-      {page}
+      {source === 'mock' && <div className="app-notice" role="status">{mockOnly ? 'Демонстрационные данные' : 'Сервис недоступен. Показаны демонстрационные данные для гостя.'}</div>}
+      {authError && path !== '/login' && <div className="app-notice app-error" role="alert">{authError}</div>}
+      {error && <div className="app-notice app-error" role="alert">{error}</div>}
+      <div inert={busy}>{page}</div>
+      {busy && <div className="request-overlay" role="status" aria-live="polite"><Spinner animation="border" /><span>Загрузка…</span></div>}
       <BottomNav path={path} />
     </>
   )

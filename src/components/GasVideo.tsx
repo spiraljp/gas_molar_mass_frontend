@@ -1,21 +1,20 @@
+import { mediaUrl } from '../api/media'
 import type { Gas } from '../types/gas'
 
 interface GasVideoProps {
   gas: Gas
   className?: string
-  controls?: boolean
 }
 
 function GasVideo({
   gas,
   className,
-  controls = false,
 }: GasVideoProps) {
   const videoUrl =
-    gas.gas_video_url?.trim() || '/media/default-gas-video.mp4'
+    mediaUrl(gas.gas_video_url, '/media/default-gas-video.mp4')
 
   const imageUrl =
-    gas.gas_image_url?.trim() || '/media/default-gas.png'
+    mediaUrl(gas.gas_image_url, '/media/default-gas.png')
 
   return (
     <video
@@ -27,7 +26,6 @@ function GasVideo({
       loop
       muted
       playsInline
-      controls={controls}
       aria-label={`Видео: ${gas.gas_name}`}
     />
   )

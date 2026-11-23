@@ -1,0 +1,31 @@
+@startuml
+left to right direction
+actor "Гость" as Guest
+actor "Пользователь" as User
+User --|> Guest
+rectangle "React — Каталог газов" {
+  usecase "Просматривать плитку газов" as Catalog
+  usecase "Фильтровать по названию" as Filter
+  usecase "Просматривать ленту и видео" as Feed
+  usecase "Войти" as Login
+  usecase "Выйти" as Logout
+  usecase "Создать черновик\nс изображением и видео" as Create
+  usecase "Опубликовать газ" as Publish
+  usecase "Удалить собственный газ" as Delete
+  usecase "Поставить / убрать лайк" as Like
+}
+Guest --> Catalog
+Guest --> Filter
+Guest --> Feed
+Guest --> Login
+User --> Logout
+User --> Create
+User --> Publish
+User --> Delete
+User --> Like
+Filter ..> Catalog : <<extend>>
+note bottom of Catalog
+При недоступности API:
+mock только в интерфейсе гостя
+end note
+@enduml

@@ -7,13 +7,23 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "api:generate": "node scripts/generate-api.mjs",
+    "api:update": "node scripts/update-openapi.mjs && npm run api:generate",
+    "test": "vitest run",
+    "build:pages": "tsc -b && vite build --mode pages",
+    "dev:https": "vite --mode https",
+    "preview:https": "vite preview --mode https",
+    "cert:generate": "node scripts/generate-cert.mjs"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.14.0",
+    "axios": "^1.21.0",
     "bootstrap": "^5.3.8",
     "react": "^19.3.1",
     "react-bootstrap": "^2.10.10",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "react-redux": "^9.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -25,8 +35,11 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.7",
     "globals": "^17.13.0",
+    "swagger-typescript-api": "^13.13.0",
     "typescript": "~6.0.3",
     "typescript-eslint": "^8.71.2",
-    "vite": "^8.3.4"
+    "vite": "^8.3.4",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.0"
   }
 }

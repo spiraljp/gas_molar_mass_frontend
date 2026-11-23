@@ -1,24 +1,33 @@
-import { Form } from 'react-bootstrap'
+import { Button, Form } from 'react-bootstrap'
 
 interface GasFilterProps {
   search: string
   onSearchChange: (value: string) => void
+  onSearch: () => void
+  disabled: boolean
 }
 
-function GasFilter({ search, onSearchChange }: GasFilterProps) {
+function GasFilter({ search, onSearchChange, onSearch, disabled }: GasFilterProps) {
   return (
-    <Form.Group controlId="gas-search" className="catalog-search">
+    <Form role="search" className="catalog-search" onSubmit={(event) => {
+      event.preventDefault()
+      if (!disabled) onSearch()
+    }}>
+      <Form.Group controlId="gas-search">
       <Form.Label visuallyHidden>
-        Поиск по названию или формуле газа
+        Поиск по названию газа
       </Form.Label>
 
       <Form.Control
         type="search"
-        placeholder="Поиск по названию или формуле"
+        placeholder="Поиск по названию"
         value={search}
+        disabled={disabled}
         onChange={(event) => onSearchChange(event.target.value)}
       />
-    </Form.Group>
+      </Form.Group>
+      <Button type="submit" disabled={disabled}>Найти</Button>
+    </Form>
   )
 }
 

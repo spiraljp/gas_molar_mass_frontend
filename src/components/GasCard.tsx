@@ -1,4 +1,6 @@
-import { Button, Card } from 'react-bootstrap'
+import GasActions from './GasActions'
+import { mediaUrl } from '../api/media'
+import { Card } from 'react-bootstrap'
 import type { Gas } from '../types/gas'
 
 interface GasCardProps {
@@ -10,7 +12,7 @@ function GasCard({ gas }: GasCardProps) {
     <Card as="article" className="gas-card">
       <Card.Img
         variant="top"
-        src={gas.gas_image_url?.trim() || '/media/default-gas.png'}
+        src={mediaUrl(gas.gas_image_url, '/media/default-gas.png')}
         alt={gas.gas_name}
         className="gas-card-image"
       />
@@ -28,24 +30,8 @@ function GasCard({ gas }: GasCardProps) {
           {gas.molar_mass} г/моль
         </Card.Text>
 
-        <div className="gas-card-actions">
-          <Button
-            as="a"
-            href={`#/gas/${gas.id}`}
-            variant="outline-primary"
-            className="details-button"
-          >
-            Подробнее
-          </Button>
-
-          <div
-            className="like-button"
-            aria-label={`Количество лайков: ${gas.likes_count}`}
-          >
-            <span className="like-icon" aria-hidden="true">♡</span>
-            <span className="like-count">{gas.likes_count}</span>
-          </div>
-        </div>
+        <a className="gas-details-link" href={`#/gas/${gas.id}`}>Подробнее</a>
+        <GasActions gas={gas} />
       </Card.Body>
     </Card>
   )

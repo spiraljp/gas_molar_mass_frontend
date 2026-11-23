@@ -1,66 +1,25 @@
+import { useEffect } from 'react'
 import { Container } from 'react-bootstrap'
-import GasVideo from '../components/GasVideo'
-import { mockGases } from '../mocks/gases'
+import { useAppDispatch, useAppSelector } from '../store'
+import { fetchGasDetails } from '../store/gasesSlice'
+import { mediaUrl } from '../api/media'
 
-interface GasDetailsPageProps {
-  gasId: number
-}
-
-function GasDetailsPage({ gasId }: GasDetailsPageProps) {
-  const gas = mockGases.find((item) => item.id === gasId)
-
-  if (!gas) {
-    return (
-      <Container as="main" className="app-screen">
-        <h1 className="page-title">Газ не найден</h1>
-        <a href="#/catalog">Вернуться в каталог</a>
-      </Container>
-    )
-  }
-
-  return (
-    <Container as="main" className="app-screen">
-      <a href="#/catalog" className="back-link">
-        ← Каталог
-      </a>
-
+export default function GasDetailsPage({ gasId }: { gasId: number }) {
+  const dispatch = useAppDispatch()
+  const { details: gas, pending } = useAppSelector((state) => state.gases)
+  const user = useAppSelector((state) => state.auth.user)
+  useEffect(() => { void dispatch(fetchGasDetails(gasId)) }, [dispatch, gasId, user])
+  return <Container as="main" className="app-screen details-screen">
+    <a href="#/catalog">← Каталог</a>
+    {gas?.id === gasId ? <>
       <h1 className="page-title">{gas.gas_name}</h1>
-
-      <img
-        src={gas.gas_image_url?.trim() || '/media/default-gas.png'}
-        alt={gas.gas_name}
-        className="details-image"
-      />
-
-      <p className="details-description">{gas.short_description}</p>
-
+      <img className="gas-details-image" src={mediaUrl(gas.gas_image_url, '/media/default-gas.png')} alt={gas.gas_name} />
+      <p>{gas.short_description}</p>
       <dl className="gas-properties">
-        <div>
-          <dt>Формула</dt>
-          <dd>{gas.gas_formula}</dd>
-        </div>
-
-        <div>
-          <dt>Молярная масса</dt>
-          <dd>{gas.molar_mass} г/моль</dd>
-        </div>
-
-        <div>
-          <dt>Плотность при н.у.</dt>
-          <dd>{gas.density_normal_conditions} кг/м³</dd>
-        </div>
-
-        <div>
-          <dt>Лайки</dt>
-          <dd>{gas.likes_count}</dd>
-        </div>
+        <dt>Формула</dt><dd>{gas.gas_formula || '—'}</dd>
+        <dt>Молярная масса</dt><dd>{gas.molar_mass ?? '—'} г/моль</dd>
+        <dt>Плотность при н.у.</dt><dd>{gas.density_normal_conditions ?? '—'} кг/м³</dd>
       </dl>
-
-      <h2 className="details-section-title">Видео</h2>
-
-      <GasVideo gas={gas} className="details-video" controls />
-    </Container>
-  )
+    </> : <p role="status">{pending ? 'Загрузка…' : 'Газ не найден'}</p>}
+  </Container>
 }
-
-export default GasDetailsPage

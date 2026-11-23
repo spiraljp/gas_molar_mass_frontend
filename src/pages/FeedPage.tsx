@@ -1,12 +1,16 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { Button } from 'react-bootstrap'
 import GasVideo from '../components/GasVideo'
-import { mockGases } from '../mocks/gases'
+import { useAppDispatch, useAppSelector } from '../store'
+import { fetchGasFeed, toggleGasLike } from '../store/gasesSlice'
 
 function FeedPage() {
-  const [index, setIndex] = useState(0)
+  const dispatch = useAppDispatch()
+  const { feed: gas, pending } = useAppSelector((state) => state.gases)
+  const user = useAppSelector((state) => state.auth.user)
+  useEffect(() => { void dispatch(fetchGasFeed({})) }, [dispatch, user])
 
-  if (mockGases.length === 0) {
+  if (!gas) {
     return (
       <main className="app-screen">
         <h1 className="page-title">Лента</h1>
@@ -15,10 +19,8 @@ function FeedPage() {
     )
   }
 
-  const gas = mockGases[index]
-
   function showNextGas() {
-    setIndex((currentIndex) => (currentIndex + 1) % mockGases.length)
+    void dispatch(fetchGasFeed({ id: gas!.id, next: true }))
   }
 
   return (
@@ -27,13 +29,16 @@ function FeedPage() {
 
       <div className="feed-shadow" />
 
-      <div
+      <button
+        type="button"
+        disabled={!user || pending > 0}
+        onClick={() => { void dispatch(toggleGasLike(gas.id)) }}
         className="feed-like"
         aria-label={`Количество лайков: ${gas.likes_count}`}
       >
-        <span className="feed-heart" aria-hidden="true">♡</span>
+        <span className="feed-heart" aria-hidden="true">{gas.is_liked ? '♥' : '♡'}</span>
         <span className="feed-like-count">{gas.likes_count}</span>
-      </div>
+      </button>
 
       <section className="feed-info" aria-live="polite">
         <h1>
@@ -46,15 +51,14 @@ function FeedPage() {
           Плотность при н.у.: {gas.density_normal_conditions} кг/м³
         </p>
 
-        <a href={`#/gas/${gas.id}`} className="feed-details-link">
-          Подробнее
-        </a>
+        <a href={`#/gas/${gas.id}`}>Подробнее</a>
       </section>
 
       <Button
         type="button"
         className="next-icon-button"
         onClick={showNextGas}
+        disabled={pending > 0}
         aria-label="Следующий газ"
         title="Следующий газ"
       >

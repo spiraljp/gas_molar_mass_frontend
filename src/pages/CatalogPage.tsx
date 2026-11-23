@@ -1,24 +1,29 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { Container } from 'react-bootstrap'
 import GasCard from '../components/GasCard'
 import GasFilter from '../components/GasFilter'
-import { mockGases } from '../mocks/gases'
+import { useAppDispatch, useAppSelector } from '../store'
+import { fetchGases, setSearch } from '../store/gasesSlice'
 
 function CatalogPage() {
-  const [search, setSearch] = useState('')
-
-  const query = search.trim().toLowerCase()
-
-  const filteredGases = mockGases.filter((gas) =>
-    gas.gas_name.toLowerCase().includes(query) ||
-    gas.gas_formula.toLowerCase().includes(query),
-  )
+  const dispatch = useAppDispatch()
+  const { search, items: filteredGases } = useAppSelector((state) => state.gases)
+  const user = useAppSelector((state) => state.auth.user)
+  const busy = useAppSelector((state) => state.gases.pending > 0)
+  useEffect(() => {
+    void dispatch(fetchGases())
+  }, [user, dispatch])
 
   return (
     <Container as="main" className="app-screen">
       <h1 className="page-title">Каталог</h1>
 
-      <GasFilter search={search} onSearchChange={setSearch} />
+      <GasFilter
+        search={search}
+        onSearchChange={(value) => dispatch(setSearch(value))}
+        onSearch={() => { void dispatch(fetchGases()) }}
+        disabled={busy}
+      />
 
       {filteredGases.length > 0 ? (
         <section className="gas-grid" aria-label="Каталог газов">

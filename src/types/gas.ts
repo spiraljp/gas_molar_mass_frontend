@@ -5,8 +5,10 @@ export interface Gas {
   short_description: string
   gas_image_url: string | null
   gas_video_url: string | null
-  molar_mass: number
-  density_normal_conditions: number
+  molar_mass: number | null
+  density_normal_conditions: number | null
   likes_count: number
-  is_owner: 0 | 1
+  is_owner: number
+  is_liked?: number
+  gas_status?: string
 }
